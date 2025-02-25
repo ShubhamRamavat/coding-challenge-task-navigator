@@ -1,158 +1,132 @@
-# React Native Coding Challenge: Task Navigator
+Task Navigator
+Task Navigator is a React Native application designed to demonstrate key mobile development skills such as authentication, CRUD operations, offline caching, deep linking, testing, and UI/UX best practices. The app interacts with the GoRest API to manage tasks (to-dos) and implements multiple key features to create a functional, efficient mobile experience.
 
-Welcome to the **Task Navigator** coding challenge!  
-This challenge will test your React Native skills—including authentication, deep linking, offline caching, testing, and more—using the publicly available [GoRest API](https://gorest.co.in/).
+Table of Contents
+Overview
+Requirements
+Setup
+Usage
+Architectural Decisions
+Features
+Testing
+Contributing
+Overview
+The Task Navigator app interacts with the GoRest API to allow users to manage a list of to-dos with CRUD operations. It includes:
 
----
+Authentication using a Bearer token.
+CRUD operations for to-dos (Create, Read, Update, Delete).
+Deep linking for specific to-do details.
+Offline functionality using local caching.
+A simple and clean user interface.
+Requirements
+React Native (0.70+ recommended)
+Node.js (v14 or above)
+npm or Yarn (Package Manager)
+GoRest API Token (for authentication)
+Setup
+Clone the repository:
 
-## Table of Contents
-1. [Overview](#overview)
-2. [Requirements](#requirements)
-3. [Features to Implement](#features-to-implement)
-4. [Technical Details](#technical-details)
-5. [Evaluation Criteria](#evaluation-criteria)
-6. [Setup & Submission](#setup--submission)
-7. [Additional Notes](#additional-notes)
+bash
+Copy
+git clone https://github.com/ShubhamRamavat/coding-challenge-task-navigator.git
+cd coding-challenge-task-navigator
+Install dependencies: Make sure you have npm or yarn installed. Then run the following command:
 
----
+bash
+Copy
+npm install
 
-## Overview
-In this challenge, you’ll build a **React Native** application called **Task Navigator** that interacts with the [GoRest API](https://gorest.co.in/). The primary goal is to demonstrate how you handle:
+# or
 
-1. **Authentication** using a Bearer token.  
-2. **CRUD operations** on to-do items (fetched from GoRest’s `/todos` endpoint).  
-3. **Deep Linking** (open a specific to-do screen via a URL).  
-4. **Offline** data access (basic caching, potentially queuing updates offline).  
-5. **Testing** (at least some unit tests, additional tests optional).  
-6. **UI/UX** best practices in React Native.
+yarn install
+Setup environment variables: Create a .env file in the root directory and add your GoRest API token like so:
 
-By the end of this challenge, we should see a working mobile app with a clean structure, showcasing your knowledge of React Native’s key concepts.
+bash
+Copy
+GOREST_API_TOKEN=your_api_token_here
+Run the app: For iOS:
 
----
+bash
+Copy
+npx react-native run-ios
+For Android:
 
-## Requirements
+bash
+Copy
+npx react-native run-android
+Usage
+Login Screen:
+Upon first launch, the app will prompt for a GoRest API token. Enter the token and proceed to the main application.
 
-### 1. Authentication
-- **Bearer Token**:  
-  - The app should prompt for a GoRest API token.  
-  - Store the token securely (e.g., `AsyncStorage` or a more secure storage library).  
-  - Every request to the GoRest endpoints must include the header:  
-    ```
-    Authorization: Bearer <YOUR_GOREST_TOKEN>
-    ```
-- **Protected Screens**:  
-  - If a token is missing or invalid, redirect the user to a Login/Token screen.
+Main Screen:
+The main screen displays the list of to-dos fetched from the API. You can:
 
-### 2. To-do CRUD
-- **List To-dos**: Fetch from `GET /public/v2/todos`.  
-- **Create To-do**: `POST /public/v2/todos` with required fields (e.g., `title`, `status`).  
-- **Edit To-do**: `PATCH /public/v2/todos/:id`.  
-- **Delete To-do**: `DELETE /public/v2/todos/:id`.  
-- **UI**: Provide appropriate screens/forms for each operation.
+View a list of all to-dos.
+Create new to-dos by clicking on a "Create" button.
+To-do Details Screen:
+Tap on a to-do to view its details, such as title, status, and description.
+You can edit or delete the to-do from this screen.
 
-### 3. Deep Linking
-- **Basic Deep Linking**:  
-  - Configure an app URL scheme, e.g. `tasknavigator://todo/:todoId`.  
-  - Opening `tasknavigator://todo/123` should navigate to the detail screen for the to-do with ID `123`.
-- **Handling App Launch**:  
-  - If the app is backgrounded or closed, it should still handle the link properly when opened.
+Deep Linking:
+The app supports deep linking. You can open the app with a URL like tasknavigator://todo/:id, and it will navigate to the corresponding to-do detail screen.
 
-### 4. Offline Handling
-- **Cache**:  
-  - Store fetched to-dos in local storage (AsyncStorage or another DB) so previously loaded items are viewable offline.
-- **Sync**:  
-  - Optional but nice-to-have: If a user creates or edits a to-do while offline, queue the request and send it when back online.
+Architectural Decisions
 
-### 5. Testing
-- **Unit Tests**:  
-  - At least one or two unit tests (e.g., a reducer or a core component) using Jest.
-- **Integration or E2E Tests** (Optional):  
-  - If you have time, showcase tests that simulate user flows (e.g., logging in, creating a to-do, etc.).
+1. State Management:
+   React Context: Used for managing the global state of the app, such as authentication and user session.
+   Redux: Optionally, Redux can be used for more complex state management if you plan to scale the app.
+2. Networking:
+   Axios is used to make API calls to the GoRest API. Axios provides a simple API for managing HTTP requests, including handling authorization headers and intercepting responses.
 
-### 6. UI/UX
-- **Styling**:  
-  - Use any design library (React Native Paper, NativeBase) or custom styles, but keep it consistent and responsive.
-- **UX Considerations**:  
-  - Handle loading states, error states, and empty states gracefully.  
-  - Provide meaningful form validation messages.
+The app uses the Bearer token stored securely using AsyncStorage for authentication. Requests to the API include the token in the Authorization header.
 
----
+3. Navigation:
+   React Navigation: The app uses React Navigation for managing screen transitions and deep linking. Deep linking is configured to allow navigation to specific to-dos through URLs like tasknavigator://todo/:todoId.
+4. Offline Storage:
+   AsyncStorage: To ensure users can view to-dos even when offline, the app caches the to-dos using AsyncStorage. This allows for a seamless offline experience, displaying previously fetched to-dos.
 
-## Features to Implement
+The app also caches newly created or edited to-dos when offline and syncs these changes when the app regains internet connectivity.
 
-1. **Login/Token Screen**:  
-   - A screen where the user inputs their GoRest token.  
-   - Validate the token by making a test request or storing it, and then navigate to the main app if valid.
+5. Error Handling:
+   Errors during API calls are caught and displayed to the user with clear error messages.
+   The app ensures proper validation for required fields (like to-do title) and provides feedback for validation errors.
+6. UI/UX:
+   The UI uses React Native Paper for consistent design elements like buttons and text inputs. The app's layout is responsive and adapts to different screen sizes.
+7. Testing:
+   Jest is used for unit testing key components and utility functions.
+   React Native Testing Library is used for testing component interaction and rendering.
+   Features
+   Authentication:
 
-2. **Main Screen (To-do List)**:  
-   - Displays a list of existing to-dos from the API.  
-   - Provide a button to create a new to-do.
+Securely stores and uses the GoRest API token.
+To-Do List:
 
-3. **To-do Details Screen**:  
-   - Shows detailed information about a single to-do (title, status, etc.).  
-   - Option to **Edit** (update status/title) and **Delete** the to-do.
-   - This screen should support **deep linking** (e.g., if the user opens `tasknavigator://todo/:id`, go here).
+Fetches and displays to-dos from the GoRest API.
+Allows users to create, edit, and delete to-dos.
+Deep Linking:
 
-4. **Create/Edit Screen**:  
-   - A form to create a new to-do or edit an existing one.  
-   - Required fields: `title`, `status`.  
-   - Validate inputs (e.g., `title` cannot be empty).
+Supports deep linking for direct navigation to specific to-do details using URLs like tasknavigator://todo/:todoId.
+Offline Caching:
 
-5. **Offline State** (Basic):
-   - Cache the to-dos so they remain visible if the app is offline.  
-   - If you have extra time, queue offline edits and apply them when online again.
+Stores to-dos locally so that the user can still access them without an internet connection.
+CRUD Operations:
 
-6. **Testing**:  
-   - A small suite of tests (unit or integration) showcasing your testing approach.
+Implemented the full set of CRUD operations for managing to-dos.
+UI & UX:
 
----
+Provides a simple and clean interface, including form validation and user-friendly feedback.
+Testing
+To run the tests for the app:
 
-## Technical Details
+Unit Tests:
 
-1. **Platform**: React Native (0.70+ recommended).
-2. **Language**: TypeScript or JavaScript—choose whichever you’re comfortable with.
-3. **State Management**: Redux, Context + Hooks, or React Query—any robust solution is acceptable.
-4. **Networking**: `fetch` or `axios`—use whichever you prefer.
-5. **Navigation**: [React Navigation](https://reactnavigation.org/) recommended.
-6. **Deep Linking Config**: [React Navigation Deep Linking Guide](https://reactnavigation.org/docs/deep-linking/).
-7. **Offline Storage**: 
-   - Use [`AsyncStorage`](https://reactnative.dev/docs/asyncstorage) or a similar local database.  
-   - Keep it simple unless you want to showcase more advanced solutions.
-8. **Testing Tools**: Jest, React Native Testing Library, Detox (optional for E2E).
+bash
+Copy
+npm test
 
----
+# or
 
-## Evaluation Criteria
+yarn test
+E2E Testing (optional):
 
-Your submission will be evaluated on:
-1. **Code Quality & Organization**  
-   - Clean, modular structure.  
-   - Appropriate file/folder organization.
-2. **Correctness & Functionality**  
-   - Properly fetching data from GoRest with Bearer token.  
-   - CRUD operations working as intended.  
-   - Deep linking navigates to the correct screen.  
-   - Offline caching works for previously fetched data.
-3. **Error Handling & Validation**  
-   - Meaningful error messages for network or validation failures.
-4. **UI/UX**  
-   - Consistent design, responsive layouts, clear user flows.
-5. **Testing Approach**  
-   - At least basic unit test coverage.  
-   - Optional integration/E2E tests are a bonus.
-6. **Performance**  
-   - Efficient rendering of lists (`FlatList` or similar).  
-   - Minimizing unnecessary re-renders.
-7. **Documentation**  
-   - A clear README explaining setup, usage, and architectural decisions.
-
----
-
-## Setup & Submission
-
-1. **Clone this Repo** (or start your own).  
-2. **Initialize the Project**:  
-   ```bash
-   npx react-native init TaskNavigator
-   cd TaskNavigator
-   # or use expo if you prefer
+For end-to-end testing, consider using Detox (optional for E2E tests).
